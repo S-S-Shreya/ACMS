@@ -1,0 +1,37 @@
+<html>
+  <head><title>Home Page</title></head>
+  <style>
+	.button {
+    display: block;
+    width: 115px;
+    height: 25px;
+    background: #4E9CAF;
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+}
+  </style>
+  
+<body>
+<h2> Hello User</h2>
+<a href="/new/" class="button">CREATE NEW DOCUMENT</a>
+
+<h1>CONTRIBUTING</h1>
+
+  <ul>
+    {% for DOCUMENT_ID in COLLABORATOR %}
+    <li>{{DOCUMENT_ID}}</li>
+    {% endfor %}
+  </ul>
+
+<h1>REVIEWING</h1>
+
+  <ul>
+    {% for DOCUMENT_ID in REVIEWER %}
+    <li>{{DOCUMENT_ID}}</li>
+    {% endfor %}
+  </ul>
+</body>
+</html>

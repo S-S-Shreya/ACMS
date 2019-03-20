@@ -1,0 +1,17 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Documents List</h1>
+  {% if docs_list %}
+  <ul>
+    {% for document in docs_list %}
+      <li>
+        <a href="{% url 'editor' document.docID %}">{{ document.docname }} ( {{ document.version }} )</a>
+      </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+    <p>There are no documents.</p>
+  {% endif %}       
+{% endblock %}
+

@@ -58,5 +58,32 @@ class LatestVersion(models.Model):
 	docVersionID = models.IntegerField()
 	latestVersion = models.FloatField(default=1.0)
 
+class Comments(models.Model):
+    userID = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    docID = models.DateTimeField()
+    commentID =models.AutoField('Comment ID',primary_key=True)
+    version = models.FloatField()
+    comment = models.TextField()
+
+    def __str__(self):
+		return self.userID + self.comment
+
+class Reply(models.Model):
+    replyID = models.AutoField('Reply ID',primary_key=True)
+    commentID = models.ForeignKey(Comments, on_delete=models.CASCADE)
+    userID = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    reply = models.TextField()
+
+    def __str__(self):
+		return self.userID + self.reply
+
+class Accept_Reject(models.Model):
+    commentID = models.ForeignKey(Comments, on_delete=models.CASCADE)
+    userID = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    accept = models.BooleanField()
+    reject = models.BooleanField()
+
+    def __str__(self):
+		return self.userID + self.accept + self.reject
     
  

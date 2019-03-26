@@ -1,6 +1,7 @@
 from django.db import models
 from django_mysql.models import JSONField
 from django import forms
+from datetime import datetime
 import django
 
 # Create your models here.
@@ -14,7 +15,7 @@ class Users(models.Model):
 	profession = models.CharField(max_length=30)
 	
 	def __str__(self):
-		return self.name
+	    return self.name
 
 class Documents(models.Model):
 	class Meta:
@@ -37,7 +38,7 @@ class Documents(models.Model):
 		super(MyModel, self).save(*args, **kwargs)
 	"""
 	def __str__(self):
-		return self.docname
+            return self.docname
 		
 	
 class User_Document(models.Model):
@@ -51,7 +52,7 @@ class User_Document(models.Model):
 	"""
 	
 	class Meta:
-		unique_together = (("docID","LOGIN_ID"),)
+	     unique_together = (("docID","LOGIN_ID"),)
 		
 		 
 class LatestVersion(models.Model):
@@ -59,31 +60,33 @@ class LatestVersion(models.Model):
 	latestVersion = models.FloatField(default=1.0)
 
 class Comments(models.Model):
-    userID = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-    docID = models.DateTimeField()
-    commentID =models.AutoField('Comment ID',primary_key=True)
-    version = models.FloatField()
-    comment = models.TextField()
+    	userID = models.ForeignKey(Users, on_delete=models.CASCADE)
+    	docID = models.DateTimeField()
+    	commentID =models.AutoField('Comment ID',primary_key=True)
+    	version = models.FloatField()
+    	comment = models.TextField()
+    	comment_time = models.DateTimeField(default=datetime.now())
 
-    def __str__(self):
-		return self.userID + self.comment
+    	def __str__(self):
+            #return self.userID.LOGIN_ID+self.comment
+            return str(self.commentID)
 
 class Reply(models.Model):
-    replyID = models.AutoField('Reply ID',primary_key=True)
-    commentID = models.ForeignKey(Comments, on_delete=models.CASCADE)
-    userID = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-    reply = models.TextField()
+    	replyID = models.AutoField('Reply ID',primary_key=True)
+    	commentID = models.ForeignKey(Comments, on_delete=models.CASCADE)
+    	userID = models.ForeignKey(Users, on_delete=models.CASCADE)
+    	reply = models.TextField()
 
-    def __str__(self):
-		return self.userID + self.reply
+    	def __str__(self):
+            return self.userID.LOGIN_ID+self.reply
 
 class Accept_Reject(models.Model):
-    commentID = models.ForeignKey(Comments, on_delete=models.CASCADE)
-    userID = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-    accept = models.BooleanField()
-    reject = models.BooleanField()
+    	commentID = models.ForeignKey(Comments, on_delete=models.CASCADE)
+    	userID = models.ForeignKey(Users, on_delete=models.CASCADE)
+    	accept = models.BooleanField()
+    	reject = models.BooleanField()
 
-    def __str__(self):
-		return self.userID + self.accept + self.reject
+    	def __str__(self):
+            return self.userID.LOGIN_ID+str(self.accept)+str(self.reject)
     
- 
+

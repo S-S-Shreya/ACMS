@@ -37,6 +37,10 @@
 #cmntfrm, #replyfrm{
   visibility: hidden;
 }
+#SAVE{
+     display:none;
+    }
+
     </style>
 </head>
 <script>
@@ -65,8 +69,8 @@
     },
     theme: "snow"
   });
-var oldDelta = {"ops":[{"attributes":{"color":"#000000"},"insert":"This is sample text."}]};
-quill.setContents(oldDelta);
+//var oldDelta = {"ops":[{"attributes":{"color":"#000000"},"insert":"This is sample text."}]};
+//quill.setContents(oldDelta);
 })
 
 function displayTitle(){
@@ -93,32 +97,6 @@ function addReply(comm_id){
 function addComment(){
   var parent=document.getElementById("comment-container");
   var inputCmnt= prompt("Enter your comment");
-  var new_comment=document.createElement("div"); //new comment box
-  var line_break=document.createElement("br");
-  new_comment.setAttribute("class","w3-panel w3-border w3-border-black w3-hover-border-white");
-  new_comment.innerHTML=inputCmnt;
-  parent.appendChild(line_break);
-  var acceptBtn = document.createElement("button");
-  var rejectBtn = document.createElement("button");
-  var replyBtn = document.createElement("button");
-  var sp=document.createTextNode(" ");
-  acceptBtn.setAttribute("class","w3-button w3-black");
-  acceptBtn.setAttribute("id","small-button");
-  rejectBtn.setAttribute("class","w3-button w3-black");
-  rejectBtn.setAttribute("id","small-button");
-  replyBtn.setAttribute("class","w3-button w3-black");
-  replyBtn.setAttribute("id","reply-button");
-  acceptBtn.innerHTML = "Accept";
-  rejectBtn.innerHTML = "Reject";
-  replyBtn.innerHTML = "Reply";
-  new_comment.appendChild(line_break);
-  new_comment.appendChild(acceptBtn);
-  new_comment.appendChild(sp);
-  new_comment.appendChild(rejectBtn);
-  new_comment.appendChild(replyBtn);
-  replyBtn.addEventListener("click",addReply,false);
-  parent.appendChild(new_comment);
-
   document.getElementById("inpcmnt").value = inputCmnt;
   document.getElementById("cmntfrm").submit();
   alert("submitted");
@@ -147,12 +125,76 @@ function showComments(){
  
 }
 
+function popup()
+    {
+      var saveDiv = document.getElementById("SAVE");
+    saveDiv.style.display = "block";
+    }
+
+    function submitFunc(){
+      // Populate hidden form on submit
+      var content=document.querySelector('input[name=contents]');
+      json=JSON.stringify(quill.getContents());
+      console.log(json);
+      content.value=json
+      document.getElementById("jug").submit();
+      alert("Document Saved");
+    }
+
+    function disable_rjctbtn(e){
+      var parent =document.getElementById(e);
+      var btn = parent.childNodes[6];
+      if(btn.disabled == true)
+      {
+        btn.disabled = false;
+      }
+      else      
+      btn.disabled = true;
+      document.getElementById('accept').value = 1;
+      document.getElementById('accepted_cmnt').value= e;
+      document.getElementById('acceptfrm').submit();
+      alert("submitted");
+      }
+
+    function disable_acptbtn(e){
+      var parent =document.getElementById(e);
+      var btn = parent.childNodes[4];
+      if(btn.disabled == true)
+      {
+        btn.disabled = false;
+      }
+      else      
+      btn.disabled = true;
+      document.getElementById('accept').value = 0;
+      document.getElementById('accepted_cmnt').value= e;
+      document.getElementById('acceptfrm').submit();
+      alert("submitted");
+      }
+
+
   </script>
 
 <body>
   <input type="text" id="title_input" name="title" placeholder="Enter the title"></input>
   <button id="title_button" class="w3-button w3-black" onclick="displayTitle();">Enter</button>
   <button id="comment_button" class="w3-button w3-black" onclick="showComments();">Show Comments</button>
+  <button class="w3-button w3-black" onclick="popup()" type="button">Save</button>
+
+  <form id="jug" action="" method="post">
+    {% csrf_token %}
+    <input name="contents" type="hidden"> 
+  
+
+      <div id="SAVE">
+      <center> 
+      Would you like to save the changes as a new version?<br/>
+      <input type="radio" name="versioning" value="Yes" checked> Yes
+        <input type="radio" name="versioning" value="No"> No<br/><br/> 
+        <!-- <input type="hidden" name="next" value="{{ request.path }}">  -->
+      <button class="w3-button w3-black" onclick="submitFunc()" type="submit">Submit</button>
+      </center>
+      </div>
+    </form> 
 
   <h1 id="title" align="center"></h1>
 
@@ -162,26 +204,49 @@ function showComments(){
       <button class="w3-button w3-black" onclick="addComment();">Add comment</button>
       {% for i in comment %} 
       <div id={{i.commentID}} class = "w3-panel w3-border w3-border-black w3-hover-border-white">
-        
+        <div class = "w3-panel w3-border-left w3-pale-yellow w3-border-red">
+        user: {{i.userID}} 
+      </div>
         {{ i.comment }}
-        <br><button class="w3-button w3-black">Accept</button>&nbsp; 
-        <button class="w3-button w3-black">Reject</button>&nbsp;&nbsp;&nbsp;
-        <button onclick=addReply({{i.commentID}}) class="w3-button w3-black">Reply</button>
+        <br><button id="acpt" class="w3-button w3-black" onclick=disable_rjctbtn({{i.commentID}});>Accept</button>&nbsp;&nbsp;&nbsp; 
+        <button name="reject" class="w3-button w3-black" onclick=disable_acptbtn({{i.commentID}});>Reject</button>&nbsp;&nbsp;&nbsp;
+        <button onclick=addReply({{i.commentID}}) class="w3-button w3-black">Reply</button>&nbsp;&nbsp;&nbsp;
+        <button onclick="document.getElementById('{{i.commentID}}+id01').style.display='block'" class="w3-button w3-black">View</button>
         {% for j in replies %}
         
         {% for k in j %}
 
-        {% if i.commentID == k.commentID %}
+        {% if i.commentID == k.commentID.commentID %}
         <div class="w3-panel w3-border-left w3-pale-red w3-border-red">
-           
+            <div id="r" class = "w3-panel w3-border-left w3-pale-yellow w3-border-red">
+            user: {{i.userID}}
+            </div>
            {{k.reply }}
           
         </div>
 
+        <div id="vote" class="w3-panel w3-border-left w3-pale-red w3-border-red">
+      </div>
         {% endif %}
         {% endfor %}
         {% endfor %}
       </div>
+        <div id="{{i.commentID}}+id01" class="w3-modal">
+        <div class="w3-modal-content">
+        <div class="w3-container">
+        <span onclick="document.getElementById('{{i.commentID}}+id01').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+      {% for v in votes %} 
+      {% for l in v %}
+      {% if l.commentID.commentID == i.commentID %}
+      
+      {% if l.accept == 1 %} 
+      {{l.userID}} accepted <br> {% endif %} 
+      {% if l.accept == 0 %} {{l.userID}} rejected <br> {% endif %}
+      {% endif %}
+      {% endfor %} {% endfor %}
+    </div>
+    </div>
+    </div>
    {% endfor %}
     </nav>
   </div>
@@ -197,6 +262,14 @@ function showComments(){
     {% csrf_token %}
     <input id="inprply" type ="text" name="input_reply">
     <input id="com" type="hidden" name="reply_com_id">
+  </form>
+  {% endfor %}
+
+  {% for doc in document %}
+  <form id="acceptfrm" method="post" action="{% url 'editor' LOGIN_ID doc.docID doc.version %}">
+    {% csrf_token %}
+    <input id="accept" name="accept" type="hidden">
+    <input id="accepted_cmnt" type="hidden" name="accepted_cmnt">
   </form>
   {% endfor %}
   </body>

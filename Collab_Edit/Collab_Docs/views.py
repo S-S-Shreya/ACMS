@@ -4,8 +4,8 @@ from django.http import HttpResponseRedirect
 from django.views.generic import TemplateView
 from django.urls import reverse
 from django import forms
-from Collab_Docs.forms import LoginForm,CommentForm,ReplyForm
-from Collab_Docs.models import Documents, Comments, Users, Reply
+from Collab_Docs.forms import LoginForm,CommentForm,ReplyForm,AcceptForm
+from Collab_Docs.models import Documents, Comments, Users, Reply, Accept_Reject
 import json
 import datetime
 
@@ -22,6 +22,8 @@ class DocumentView(TemplateView):
 
 def DocumentView(request):
 	docs = Documents.objects.all().order_by('docname')
+	print("here in doc view")
+	print(docs)
 	context = {
 		'docs_list':docs
 	}
@@ -64,23 +66,42 @@ def EditorView(request,LOGIN_ID,id,version):
 			if(request.POST['contents']):
 				print("here1")
 				newVersion = request.POST.getlist('versioning')
-			
+				print(newVersion)
 				x=request.POST["contents"]
 				print(x)
 				
 				if(newVersion[0]=="No"):
+					print("here in if")
 					check=Documents.objects.filter(docID=id).update(content=x)
 					print("check:",check)
 					return HttpResponseRedirect(reverse('data',kwargs={'LOGIN_ID':LOGIN_ID}))
 				
 				else:
+					print("Here in else")
+					print(id)
 					doc = Documents.objects.get(docID=id)
+					print(doc)
 					newVersionNumber = float(doc.version)+1
+					print(newVersionNumber)
 					newDoc = Documents(docID=doc.docID,docname=doc.docname,version=newVersionNumber,content=x,lock=0) #docVersionID=doc.docID
+					print("new doc created")
 					newDoc.save()
 					#doc = LatestVersion.objects.get(docID=id).update(latestVersion = newVersionNumber)
 					return HttpResponseRedirect(reverse('data',kwargs={'LOGIN_ID':LOGIN_ID}))
 		except: 
+			pass
+		try:
+			if(request.POST['accept']):
+				form = CommentForm(request.POST)
+				x = (request.POST.get('accept'))
+				acc_comment_id = Comments.objects.get(commentID=request.POST.get('accepted_cmnt'))
+				if(x == '0'):
+					vote = Accept_Reject(commentID = acc_comment_id, userID = user, accept = 0, reject = 1)
+				else:
+					vote = Accept_Reject(commentID = acc_comment_id, userID = user, accept = 1, reject = 0)
+				vote.save()
+
+		except:
 			pass
 		
 
@@ -89,10 +110,16 @@ def EditorView(request,LOGIN_ID,id,version):
 	doc = Documents.objects.filter(docID=id,version=version)
 	comment = Comments.objects.filter(docID=id)
 	replies = []
+	votes = []
 	for i in comment:
 		reply = Reply.objects.filter(commentID=i.commentID)
+		vote = Accept_Reject.objects.filter(commentID=i.commentID)
 		replies.append(reply)
-	context = {'document':doc, 'LOGIN_ID': LOGIN_ID, 'comment': comment, 'replies':replies}
+		print("VOTESSS")
+		print(vote)
+		votes.append(vote)
+		print(votes)
+	context = {'document':doc, 'LOGIN_ID': LOGIN_ID, 'comment': comment, 'replies':replies, 'votes':votes}
 	return render(request,'editor_page.html', context=context)
 
 

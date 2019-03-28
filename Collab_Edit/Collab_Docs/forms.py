@@ -9,3 +9,6 @@ class CommentForm(forms.Form):
 
 class ReplyForm(forms.Form):
 	input_reply = forms.CharField()
+
+class AcceptForm(forms.Form):
+	accept = forms.IntegerField()

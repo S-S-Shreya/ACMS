@@ -83,8 +83,8 @@ class Reply(models.Model):
 class Accept_Reject(models.Model):
     	commentID = models.ForeignKey(Comments, on_delete=models.CASCADE)
     	userID = models.ForeignKey(Users, on_delete=models.CASCADE)
-    	accept = models.BooleanField()
-    	reject = models.BooleanField()
+    	accept = models.IntegerField()
+    	reject = models.IntegerField()
 
     	def __str__(self):
             return self.userID.LOGIN_ID+str(self.accept)+str(self.reject)

@@ -81,27 +81,28 @@ function displayTitle(){
 }
 
 function addReply(comm_id){
-  var parent=this.parentNode;
-  var new_reply=document.createElement("div");
-  var reply = prompt("Enter your reply");
-  /*new_reply.setAttribute("class","w3-panel w3-border-left w3-pale-red w3-border-red");
-  new_reply.innerHTML=reply;
-  parent.appendChild(new_reply);*/
-
-  document.getElementById("inprply").value = reply;
+  document.getElementById('ask1').style.display='block';
   document.getElementById("com").value = comm_id;
-  document.getElementById("replyfrm").submit();
-  alert("submitted");
+  //alert(comm_id);
+  
 }
 
-function addComment(){
-  var parent=document.getElementById("comment-container");
-  var inputCmnt= prompt("Enter your comment");
+function trial(){
+	var reply = document.getElementById("newinp1").value;
+	//alert(reply);
+	document.getElementById("inprply").value = reply;
+	document.getElementById("replyfrm").submit();
+ 	//alert("submitted");
+	
+}
+
+function frmsubmit(){
+	var inputCmnt = document.getElementById("newinp").value;
+	//alert(inputCmnt);
   document.getElementById("inpcmnt").value = inputCmnt;
   document.getElementById("cmntfrm").submit();
-  alert("submitted");
+  //alert("submitted");
 }
-
 function showComments(){
   content=document.getElementById("comment_button").innerHTML;
   if(content == "Show Comments")
@@ -153,7 +154,7 @@ function popup()
       document.getElementById('accept').value = 1;
       document.getElementById('accepted_cmnt').value= e;
       document.getElementById('acceptfrm').submit();
-      alert("submitted");
+      //alert("submitted");
       }
 
     function disable_acptbtn(e){
@@ -168,7 +169,7 @@ function popup()
       document.getElementById('accept').value = 0;
       document.getElementById('accepted_cmnt').value= e;
       document.getElementById('acceptfrm').submit();
-      alert("submitted");
+      //alert("submitted");
       }
 
 
@@ -201,15 +202,33 @@ function popup()
   <div>
     <div id="snow-container"></div>
     <nav id="initial_nav">
-      <button class="w3-button w3-black" onclick="addComment();">Add comment</button>
+      <button class="w3-button w3-black" onclick="document.getElementById('ask').style.display='block'">Add comment</button>
       {% for i in comment %} 
       <div id={{i.commentID}} class = "w3-panel w3-border w3-border-black w3-hover-border-white">
         <div class = "w3-panel w3-border-left w3-pale-yellow w3-border-red">
-        user: {{i.userID}} 
+        username: {{i.userID}} 
       </div>
         {{ i.comment }}
+        {% if i.commentID not in voted_comments %}
         <br><button id="acpt" class="w3-button w3-black" onclick=disable_rjctbtn({{i.commentID}});>Accept</button>&nbsp;&nbsp;&nbsp; 
         <button name="reject" class="w3-button w3-black" onclick=disable_acptbtn({{i.commentID}});>Reject</button>&nbsp;&nbsp;&nbsp;
+        {% else %}
+
+        {% for v in votes %} 
+      	{% for l in v %}
+      		
+      		{% if l.commentID.commentID == i.commentID %}
+      			
+      			{% if l.accept == 1 %} <br><button id="acpt" class="w3-button w3-green">Accepted</button>&nbsp;&nbsp;&nbsp;
+      				  {% endif %}
+      			{% if l.accept == 0 %} <br><button id="acpt" class="w3-button w3-red">Rejected</button>&nbsp;&nbsp;&nbsp; {% endif %}
+      			
+      		{% endif %}	
+      			
+      		
+      	{% endfor %} {% endfor %}
+
+        {% endif %}
         <button onclick=addReply({{i.commentID}}) class="w3-button w3-black">Reply</button>&nbsp;&nbsp;&nbsp;
         <button onclick="document.getElementById('{{i.commentID}}+id01').style.display='block'" class="w3-button w3-black">View</button>
         {% for j in replies %}
@@ -219,7 +238,7 @@ function popup()
         {% if i.commentID == k.commentID.commentID %}
         <div class="w3-panel w3-border-left w3-pale-red w3-border-red">
             <div id="r" class = "w3-panel w3-border-left w3-pale-yellow w3-border-red">
-            user: {{i.userID}}
+            username: {{i.userID}}
             </div>
            {{k.reply }}
           
@@ -235,15 +254,23 @@ function popup()
         <div class="w3-modal-content">
         <div class="w3-container">
         <span onclick="document.getElementById('{{i.commentID}}+id01').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+      {% if i.commentID not in voted_comments %}
+      		<p> No reactions yet! </p>
+      {% else %}
       {% for v in votes %} 
-      {% for l in v %}
-      {% if l.commentID.commentID == i.commentID %}
-      
-      {% if l.accept == 1 %} 
-      {{l.userID}} accepted <br> {% endif %} 
-      {% if l.accept == 0 %} {{l.userID}} rejected <br> {% endif %}
-      {% endif %}
+      	{% for l in v %}
+      		
+      		{% if l.commentID.commentID == i.commentID %}
+      			
+      			{% if l.accept == 1 %} 
+      				<p>{{l.userID}} accepted </p>  {% endif %}
+      			{% if l.accept == 0 %} <p>{{l.userID}} rejected </p> {% endif %}
+      			
+      		{% endif %}	
+      			
+      		
       {% endfor %} {% endfor %}
+      {% endif %}
     </div>
     </div>
     </div>
@@ -272,5 +299,29 @@ function popup()
     <input id="accepted_cmnt" type="hidden" name="accepted_cmnt">
   </form>
   {% endfor %}
+
+
+  <div id="ask" class="w3-modal">
+        <div class="w3-modal-content">
+        <div class="w3-container">
+        <span onclick="document.getElementById('ask').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+      	<p> Enter here! </p>
+      	<textarea id="newinp" rows="6" cols="80" ></textarea><br>
+      	<button onclick="frmsubmit()" class="w3-button w3-black">Submit</button>
+    </div>
+    </div>
+    </div>
+
+   <div id="ask1" class="w3-modal">
+        <div class="w3-modal-content">
+        <div class="w3-container">
+        <span onclick="document.getElementById('ask').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+      	<p> Enter here! </p>
+      	<textarea id="newinp1" rows="6" cols="80" ></textarea><br>
+      	<button onclick="trial()" class="w3-button w3-black">Submit</button>
+    </div>
+    </div>
+    </div>
+
   </body>
 </html>

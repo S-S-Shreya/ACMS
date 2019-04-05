@@ -108,18 +108,27 @@ def EditorView(request,LOGIN_ID,id,version):
 	# If this is a GET (or any other method) create the default form.
 	print("here")
 	doc = Documents.objects.filter(docID=id,version=version)
-	comment = Comments.objects.filter(docID=id)
+	comment = Comments.objects.filter(docID=id).order_by('-commentID')
 	replies = []
 	votes = []
+	voted_comments = []
+	t=Accept_Reject.objects.all().values('commentID')
+	for j in t:
+		voted_comments.append(j['commentID'])
 	for i in comment:
 		reply = Reply.objects.filter(commentID=i.commentID)
 		vote = Accept_Reject.objects.filter(commentID=i.commentID)
 		replies.append(reply)
-		print("VOTESSS")
-		print(vote)
+		#print("VOTESSS")
+		#print(vote)
 		votes.append(vote)
-		print(votes)
-	context = {'document':doc, 'LOGIN_ID': LOGIN_ID, 'comment': comment, 'replies':replies, 'votes':votes}
+		#print(votes)
+	context = {'document':doc, 
+	'LOGIN_ID': LOGIN_ID, 
+	'comment': comment, 
+	'replies':replies, 
+	'votes':votes, 
+	'voted_comments':voted_comments}
 	return render(request,'editor_page.html', context=context)
 
 

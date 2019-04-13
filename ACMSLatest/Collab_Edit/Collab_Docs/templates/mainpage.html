@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>HOME</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+  <style>
+  	.btn {
+              
+              margin:10px;
+         }
+  </style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-inverse">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<label class="navbar-brand">Student'sEditor</label>
+		</div>
+		<ul class="nav navbar-nav navbar-right">
+			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#signup">SIGN UP</button>
+			<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#login">LOGIN</button>
+		</ul>
+	</div>
+</nav>
+
+<div class="container">
+  <!-- The Modal for SIGN IN-->
+  <div class="modal" id="signup">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      
+        	<!-- Modal Header -->
+        	<div class="modal-header">
+          		<h4 class="modal-title">NEW USER</h4>
+         		<button type="button" class="close" data-dismiss="modal">&times;</button>
+        	</div>
+        
+        <!-- Modal body -->
+        	<div class="modal-body">
+            	<form method="post" action="{% url 'login' %}">
+            		{% csrf_token %}
+            		<div class="form-group">
+            			<label for="nameofuser">Enter the User Name which acts as your login id</label>
+            			<input type="text" class="form-control" id="username" placeholder="User name ">
+            		</div>
+
+            		<div class="form-group">
+              			<label for="password">Enter the Password</label>
+              			<input type="password" class="form-control" id="password" aria-describedby="help" placeholder="Password">
+              			<small id="help" class="form-text text-muted">We'll never share your password with anyone else.</small>
+              		</div>
+
+            		<div class="form-group">
+                		<label for="University">University/College Name</label>
+                		<input type="text" class="form-control" id="universityname" placeholder="College/University">
+            		</div>
+
+            		<div class="form-group">
+                		<label for="Email">Email address</label>
+                		<input type="email" class="form-control" id="email" placeholder="Enter email">
+            		</div>
+              
+            		<button class="btn btn-primary" type="submit">Sign Up</button>
+
+            		<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+           		</form>
+        	</div>  
+
+      </div>
+    </div>
+  </div>
+  <!-- END OF SIGNUP MODAL-->
+
+ <!-- The Modal for LOGIN--> <!-- The Modal for LOGIN-->
+<div class="modal" id="login">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">LOGIN</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+        	<form method="post" action="{% url 'login' %}">
+        		{% csrf_token %}
+        		<div class="form-group">
+        			<label>Enter the Username</label>
+        			<input type="text" class="form-control" name="LOGIN_ID" placeholder="username">
+        		</div>
+        		<div class="form-group">
+        			<label>Enter the Password</label>
+        			<input type="password" class="form-control" name="PASSWORD" placeholder="password">
+        		</div> 
+            <button class="btn btn-primary" type="submit" name="login_user" >LOGIN</button>
+
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </form>
+        </div>  
+      </div>
+    </div>
+  </div>
+<!-- END OF LOGIN MODAL-->
+
+</div>
+
+</body>
+</html>

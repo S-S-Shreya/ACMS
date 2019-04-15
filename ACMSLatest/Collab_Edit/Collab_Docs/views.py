@@ -286,7 +286,7 @@ def createDoc(request, LOGIN_ID):
 					
 			else:
 				print('\nwrong credentials\n')
-			return redirect(reverse('editor', kwargs={'LOGIN_ID':LOGIN_ID, 'id':doc.docID, 'version': 1.0}))
+			return redirect(reverse('data', kwargs={'LOGIN_ID':LOGIN_ID}))
 				
 		except Exception as e:
 			print('\n', e, '\nwrong credentials\n')

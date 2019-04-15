@@ -26,6 +26,7 @@ class Documents(models.Model):
 	docname = models.CharField(max_length=50)
 	content = JSONField()
 	lock = models.IntegerField(default=0)
+	approve = models.BooleanField(default=False)
 	
 	"""
 	myID = models.IntegerField(default=0)

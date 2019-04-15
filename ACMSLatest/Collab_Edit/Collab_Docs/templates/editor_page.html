@@ -7,231 +7,221 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
   <style>
     #snow-container {
-  height: 100%;
-  width: 100%;
-}
- #comment-container{
-  float: right;
-  width: 40%;
-  /*height: 850px;  only for demonstration, should be removed */
-  background: #ccccff;
-  padding: 20px;
-  margin-top: -850px;
-}
-#initial_editor{
-  height: 100%;
-  width: 100%;
-}
-#initial_nav{
-  display:none;
-}
-
-#small-button{
-  margin-bottom: 5px;
-}
-
-#reply-button{
-  margin-bottom: 5px;
-  margin-left: 220px;
-}
-#cmntfrm, #replyfrm{
-  visibility: hidden;
-}
-#SAVE{
-     display:none;
+      height: 70%;
+      width: 100%;
     }
-
-    </style>
+    #comment-container{
+      float: right;
+      width: 40%;
+      /*height: 850px;  only for demonstration, should be removed */
+      background: #ccccff;
+      padding: 20px;
+      margin-top: -850px;
+    }
+    #initial_editor{
+      height: 100%;
+      width: 100%;
+    }
+    #initial_nav{
+      display:none;
+    }
+    #small-button{
+      margin-bottom: 5px;
+    }
+    #reply-button{
+      margin-bottom: 5px;
+      margin-left: 220px;
+    }
+    #cmntfrm, #replyfrm{
+      visibility: hidden;
+    }
+    #SAVE{
+      display:none;
+    }
+  </style>
 </head>
 <script>
   $(document).ready(function() {
-  var toolbarOptions = [
-    ["bold", "italic", "underline", "strike"], // toggled buttons
-    // ['blockquote'],
-    [{ list: "ordered" }, { list: "bullet" }],
-    [{ script: "sub" }, { script: "super" }], // superscript/subscript
-    [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
-    [{ direction: "rtl" }], // text direction
+    //alert("{{role}}");
+    var toolbarOptions = [
+      ["bold", "italic", "underline", "strike"], // toggled buttons
+      // ['blockquote'],
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ script: "sub" }, { script: "super" }], // superscript/subscript
+      [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
+      [{ direction: "rtl" }], // text direction
 
-    [{ size: ["small", false, "large", "huge"] }], // custom dropdown
-    [{ header: [1, 2, 3, 4, 5, 6, false] }],
+      [{ size: ["small", false, "large", "huge"] }], // custom dropdown
+      [{ header: [1, 2, 3, 4, 5, 6, false] }],
 
-    [{ color: [] }, { background: [] }], // dropdown with defaults from theme
-    [{ font: [] }],
-    [{ align: [] }],
+      [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+      [{ font: [] }],
+      [{ align: [] }],
 
-    ["clean"] // remove formatting button
-  ];
-  /*
-  quill = new Quill("#snow-container", {
-    placeholder: "Compose an epic...",
-    modules: {
-      toolbar: toolbarOptions
-    },
-    theme: "snow"
-  });
-  */
+      ["clean"] // remove formatting button
+    ];
 
+    {% for x in document %}
+      {% if latestVersion == x.version and lock == 0 and role == "Contributor" %}
+        var apprBtn = document.getElementById("approveButton");
+        apprBtn.style.display = "none";
+        console.log("ifbody")
+        console.log({{latestVersion}})
+        console.log({{x.version}})
+        quill = new Quill("#snow-container", {
+          placeholder: "Compose an epic...",
+          modules: {
+            toolbar: toolbarOptions
+          },
+          theme: "snow"
+        });
+      {% else %} 
+        var saveBtn = document.getElementById("saveButton");
+        saveBtn.style.display = "none";
+        {% if role == "Contributor" %}
+          var apprBtn = document.getElementById("approveButton");
+          apprBtn.style.display = "none";
+        {% endif %}
+        {% if latestVersion == x.version and lock == 1 and role == "Contributor" %}
+          window.alert("Document is already being edited. Opening in ReadOnly Mode");
+        {% endif %}
+        console.log("elsebody")
+        console.log({{latestVersion}})
+        console.log({{x.version}})
+        quill = new Quill("#snow-container", {
+          readOnly:true,
+          placeholder: "Compose an epic...",
+          modules: {
+            toolbar: toolbarOptions
+          },
+          theme: "snow"
+        });
+      {% endif %}
 
-
-{% for x in document %}
-
-{% if latestVersion == x.version and lock == 0 %}
-  		var saveBtn = document.getElementById("saveButton");
-		saveBtn.style.display = "block";
-  		console.log("ifbody")
-  		console.log({{latestVersion}})
-  		console.log({{x.version}})
-	  	quill = new Quill("#snow-container", {
-    placeholder: "Compose an epic...",
-    modules: {
-      toolbar: toolbarOptions
-    },
-    theme: "snow"
-  });
-	{% else %} 
-		{% if latestVersion == x.version and lock == 1 %}
-			window.alert("Document is already being edited. Opening in ReadOnly Mode");
-		{% endif %}
-		console.log("elsebody")
-  		console.log({{latestVersion}})
-  		console.log({{x.version}})
-    quill = new Quill("#snow-container", {
-    readOnly:true,
-    placeholder: "Compose an epic...",
-    modules: {
-      toolbar: toolbarOptions
-    },
-    theme: "snow"
-  });
-	{% endif %}
-    {% if x %}
-    	json={{x.content|safe}}
-		quill.setContents(json)
-	{% endif %}  
-{% endfor %}
-})
+      {% if x %}
+        json={{x.content|safe}}
+        quill.setContents(json)
+      {% endif %}  
+    {% endfor %}
+  })
 
 
-
-function undo(c){
-	document.getElementById('undo_cmnt').value = c;
-	document.getElementById('undofrm').submit();
-	alert("submitted");
-}
-
-function displayTitle(){
-  var title_object=document.getElementById("title");
-  title_object.innerHTML = document.getElementById("title_input").value;
-  document.getElementById("title_input").style.display="none";
-  document.getElementById("title_button").style.display="none";
-}
-
-function addReply(comm_id){
-  document.getElementById('ask1').style.display='block';
-  document.getElementById("com").value = comm_id;
-  //alert(comm_id);
-  
-}
-
-function trial(){
-	var reply = document.getElementById("newinp1").value;
-	//alert(reply);
-	document.getElementById("inprply").value = reply;
-	document.getElementById("replyfrm").submit();
- 	//alert("submitted");
-	
-}
-
-function frmsubmit(){
-	var inputCmnt = document.getElementById("newinp").value;
-	//alert(inputCmnt);
-  document.getElementById("inpcmnt").value = inputCmnt;
-  document.getElementById("cmntfrm").submit();
-  //alert("submitted");
-}
-function showComments(){
-  content=document.getElementById("comment_button").innerHTML;
-  if(content == "Show Comments")
-  {
-    var editor=document.getElementById("snow-container");
-    editor.style.height = "850px";
-    editor.style.width = "60%";
-    var nav = document.getElementById("initial_nav");
-    nav.setAttribute("id","comment-container");
-    document.getElementById("comment_button").innerHTML= "Hide Comments"
+  function undo(c){
+    document.getElementById('undo_cmnt').value = c;
+    document.getElementById('undofrm').submit();
+    alert("submitted");
   }
-  if(content == "Hide Comments")
-  {
-    var editor=document.getElementById("snow-container");
-    editor.style.height = "100%";
-    editor.style.width = "100%";
-    var nav = document.getElementById("comment-container");
-    nav.setAttribute("id","initial_nav");
-    document.getElementById("comment_button").innerHTML= "Show Comments"
-  }
- 
-}
 
-function popup()
+  function displayTitle(){
+    var title_object=document.getElementById("title");
+    {% for x in document %}
+      title_object.innerHTML = "{{x.docname}}";
+    {% endfor %}
+  }
+
+  function addReply(comm_id){
+    document.getElementById('ask1').style.display='block';
+    document.getElementById("com").value = comm_id;
+  }
+
+  function trial(){
+    var reply = document.getElementById("newinp1").value;
+    //alert(reply);
+    document.getElementById("inprply").value = reply;
+    document.getElementById("replyfrm").submit();
+  }
+
+  function frmsubmit(){
+    var inputCmnt = document.getElementById("newinp").value;
+    //alert(inputCmnt);
+    document.getElementById("inpcmnt").value = inputCmnt;
+    document.getElementById("cmntfrm").submit();
+  }
+  function showComments(){
+    content=document.getElementById("comment_button").innerHTML;
+    if(content == "Show Comments")
     {
-      var saveDiv = document.getElementById("SAVE");
+      var editor=document.getElementById("snow-container");
+      editor.style.height = "850px";
+      editor.style.width = "60%";
+      var nav = document.getElementById("initial_nav");
+      nav.setAttribute("id","comment-container");
+      document.getElementById("comment_button").innerHTML= "Hide Comments"
+    }
+    if(content == "Hide Comments")
+    {
+      var editor=document.getElementById("snow-container");
+      editor.style.height = "100%";
+      editor.style.width = "100%";
+      var nav = document.getElementById("comment-container");
+      nav.setAttribute("id","initial_nav");
+      document.getElementById("comment_button").innerHTML= "Show Comments"
+    }
+  }
+
+  function popup()
+  {
+    var saveDiv = document.getElementById("SAVE");
     saveDiv.style.display = "block";
-    }
+  }
 
-    function submitFunc(){
-      // Populate hidden form on submit
-      var content=document.querySelector('input[name=contents]');
-      json=JSON.stringify(quill.getContents());
-      console.log(json);
-      content.value=json
-      document.getElementById("jug").submit();
-      alert("Document Saved");
-    }
+  function submitFunc(){
+    // Populate hidden form on submit
+    var content=document.querySelector('input[name=contents]');
+    json=JSON.stringify(quill.getContents());
+    console.log(json);
+    content.value=json
+    document.getElementById("jug").submit();
+    alert("Document Saved");
+  }
 
-    function disable_rjctbtn(e){
-      var parent =document.getElementById(e);
-      var btn = parent.childNodes[6];
-      if(btn.disabled == true)
-      {
-        btn.disabled = false;
-      }
-      else      
+  function approveUpdate(){
+    // Populate hidden form on submit
+    var apprValue=document.querySelector('input[name=approve]');
+    apprValue.value="yes";
+    document.getElementById("jug").submit();
+  }
+
+  function disable_rjctbtn(e){
+    var parent =document.getElementById(e);
+    var btn = parent.childNodes[6];
+    if(btn.disabled == true)
+      btn.disabled = false;
+    else      
       btn.disabled = true;
-      document.getElementById('accept').value = 1;
-      document.getElementById('accepted_cmnt').value= e;
-      document.getElementById('acceptfrm').submit();
-      //alert("submitted");
-      }
+    document.getElementById('accept').value = 1;
+    document.getElementById('accepted_cmnt').value= e;
+    document.getElementById('acceptfrm').submit();
+    //alert("submitted");
+  }
 
-    function disable_acptbtn(e){
-      var parent =document.getElementById(e);
-      var btn = parent.childNodes[4];
-      if(btn.disabled == true)
-      {
-        btn.disabled = false;
-      }
-      else      
+  function disable_acptbtn(e){
+    var parent =document.getElementById(e);
+    var btn = parent.childNodes[4];
+    if(btn.disabled == true)
+      btn.disabled = false;
+    else      
       btn.disabled = true;
-      document.getElementById('accept').value = 0;
-      document.getElementById('accepted_cmnt').value= e;
-      document.getElementById('acceptfrm').submit();
-      //alert("submitted");
-      }
-
-
-  </script>
+    document.getElementById('accept').value = 0;
+    document.getElementById('accepted_cmnt').value= e;
+    document.getElementById('acceptfrm').submit();
+  }
+</script>
 
 <body>
-  <input type="text" id="title_input" name="title" placeholder="Enter the title"></input>
-  <button id="title_button" class="w3-button w3-black" onclick="displayTitle();">Enter</button>
-  <button id="comment_button" class="w3-button w3-black" onclick="showComments();">Show Comments</button>
-  <button class="w3-button w3-black" onclick="popup()" type="button" id="saveButton">Save</button>
-
   <form id="jug" action="" method="post">
     {% csrf_token %}
+    &nbsp;
+    <button id="comment_button" class="w3-button w3-black" onclick="showComments();" type="button">Show Comments</button>
+    &nbsp;
+    <button id="saveButton" class="w3-button w3-black" onclick="popup();" type="button">Save</button> 
+    <button id="approveButton" class="w3-button w3-black" onclick="approveUpdate();" type="submit">Approve</button>
     <input name="contents" type="hidden"> 
-  
+    <input name="approve" type="hidden">
+    {% if ReviewerName %}
+      <p>&nbsp; This document has been approved by {{ReviewerName}} </p>
+    {% endif %}
+
 
       <div id="SAVE">
       <center> 
@@ -241,11 +231,11 @@ function popup()
         <!-- <input type="hidden" name="next" value="{{ request.path }}">  -->
       <button class="w3-button w3-black" onclick="submitFunc()" type="submit">Submit</button>
       </center>
-      </div>
+    </div>
     </form> 
-
-  <h1 id="title" align="center"></h1>
-
+  <h2 id="title" align="center"></h2>
+  <script> displayTitle() </script>
+  
   <div>
     <div id="snow-container"></div>
     <nav id="initial_nav">
@@ -325,14 +315,14 @@ function popup()
     </nav>
   </div>
   {% for doc in document %}
-  <form id="cmntfrm" method="post" action="{% url 'editor' LOGIN_ID doc.docID doc.version%}">
+  <form id="cmntfrm" method="post" action="">
     {% csrf_token %}
     <input id="inpcmnt" type ="text" name="input_comment">
   </form>
   {% endfor %}
 
   {% for doc in document %}
-  <form id="replyfrm" method="post" action="{% url 'editor' LOGIN_ID doc.docID doc.version %}">
+  <form id="replyfrm" method="post" action="">
     {% csrf_token %}
     <input id="inprply" type ="text" name="input_reply">
     <input id="com" type="hidden" name="reply_com_id">
@@ -340,7 +330,7 @@ function popup()
   {% endfor %}
 
   {% for doc in document %}
-  <form id="acceptfrm" method="post" action="{% url 'editor' LOGIN_ID doc.docID doc.version %}">
+  <form id="acceptfrm" method="post" action="">
     {% csrf_token %}
     <input id="accept" name="accept" type="hidden">
     <input id="accepted_cmnt" type="hidden" name="accepted_cmnt">
@@ -348,7 +338,7 @@ function popup()
   {% endfor %}
 
   {% for doc in document %}
-  <form id="undofrm" method="post" action="{% url 'editor' LOGIN_ID doc.docID doc.version %}">
+  <form id="undofrm" method="post" action="">
     {% csrf_token %}
     <input id="undo_user" name="undo" type="hidden">
     <input id="undo_cmnt" type="hidden" name="undo_cmnt">

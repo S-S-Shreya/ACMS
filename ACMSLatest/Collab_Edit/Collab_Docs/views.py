@@ -24,12 +24,18 @@ def DocumentView(request):
 	}
 	return render(request,'documents.html', context=context)
 	
-def EditorView(request,LOGIN_ID,id,version):
+def EditorView(request,LOGIN_ID,id,version,role):
 	# If this is a POST request then process the Form data
 	user = Users.objects.get(LOGIN_ID = LOGIN_ID)
 	if request.method == 'POST':
 		
-		
+		try:
+			if(request.POST['approve']):
+				print("hereinapprove")
+				docs = Documents.objects.filter(docID=id,version=version).update(approve=True)
+		except:
+			pass
+
 		try:
 			if(request.POST["input_comment"]): 
 				#if comment is to be added
@@ -114,11 +120,17 @@ def EditorView(request,LOGIN_ID,id,version):
 		except:
 			pass
 
-		
-
 	# If this is a GET (or any other method) create the default form.
 	print("here")
 	doc = Documents.objects.filter(docID=id,version=version)
+	#docObj = Documents.objects.get(docID=id,version=version)
+	x = 0
+	for x in doc:
+		pass
+	ReviewerName = None
+	if(x.approve == True):
+		Reviewer = User_Document.objects.get(docID__docID =id,ROLE="REVIEWER")
+		ReviewerName = Reviewer.LOGIN_ID.name
 	comment = Comments.objects.filter(docID=id).order_by('-commentID')
 	replies = []
 	votes = []
@@ -157,7 +169,9 @@ def EditorView(request,LOGIN_ID,id,version):
 				'votes':votes, 
 				'personal_votes':personal_votes,
 				'personal_v':p_voted,
-				'voted_comments':voted_comments}
+				'voted_comments':voted_comments,
+				'role':role,
+				'ReviewerName':ReviewerName }
 	return render(request,'editor_page.html', context=context )
 
 

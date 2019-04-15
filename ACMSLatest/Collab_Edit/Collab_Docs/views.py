@@ -33,6 +33,7 @@ def EditorView(request,LOGIN_ID,id,version,role):
 			if(request.POST['approve']):
 				print("hereinapprove")
 				docs = Documents.objects.filter(docID=id,version=version).update(approve=True)
+
 		except:
 			pass
 
@@ -156,12 +157,16 @@ def EditorView(request,LOGIN_ID,id,version,role):
 		flag = i.lock
 	if(flag==0):
 		bla = Documents.objects.filter(docID=id,version=version).update(lock=1)
+		lockingUser = LatestVersion.objects.filter(docVersionID__docID = i.docID).update(lockUser = user)
 	latestVersion = LatestVersion.objects.filter(docVersionID__docID = i.docID)
 	for x in latestVersion:
 		pass
+	print(x.lockUser.LOGIN_ID)
+	print(LOGIN_ID)
 	print("done")
 	context = { 'document':doc, 
 				'latestVersion' : x.latestVersion, 
+				'lockedUser' : x.lockUser.LOGIN_ID,
 				'lock':flag, 
 				'LOGIN_ID': LOGIN_ID, 
 				'comment': comment, 

@@ -62,40 +62,45 @@
     ];
 
     {% for x in document %}
-      {% if latestVersion == x.version and lock == 0 and role == "Contributor" %}
-        var apprBtn = document.getElementById("approveButton");
-        apprBtn.style.display = "none";
-        console.log("ifbody")
-        console.log({{latestVersion}})
-        console.log({{x.version}})
-        quill = new Quill("#snow-container", {
-          placeholder: "Compose an epic...",
-          modules: {
-            toolbar: toolbarOptions
-          },
-          theme: "snow"
-        });
-      {% else %} 
-        var saveBtn = document.getElementById("saveButton");
-        saveBtn.style.display = "none";
-        {% if role == "Contributor" %}
+      //alert("{{lockedUser}}");
+      //alert("{{LOGIN_ID}}");
+      {% if latestVersion == x.version and role == "Contributor" %}
+        alert("here1")
+        {% if lock == 0 or lockedUser == LOGIN_ID %}
           var apprBtn = document.getElementById("approveButton");
           apprBtn.style.display = "none";
+          console.log("ifbody")
+          console.log({{latestVersion}})
+          console.log({{x.version}})
+          quill = new Quill("#snow-container", {
+            placeholder: "Compose an epic...",
+            modules: {
+              toolbar: toolbarOptions
+            },
+            theme: "snow"
+          });
+        {% else %} 
+          var saveBtn = document.getElementById("saveButton");
+          saveBtn.style.display = "none";
+          {% if role == "Contributor" %}
+            var apprBtn = document.getElementById("approveButton");
+            apprBtn.style.display = "none";
+          {% endif %}
+          {% if latestVersion == x.version and lock == 1 and role == "Contributor" %}
+            window.alert("Document is already being edited. Opening in ReadOnly Mode");
+          {% endif %}
+          console.log("elsebody")
+          console.log({{latestVersion}})
+          console.log({{x.version}})
+          quill = new Quill("#snow-container", {
+            readOnly:true,
+            placeholder: "Compose an epic...",
+            modules: {
+              toolbar: toolbarOptions
+            },
+            theme: "snow"
+          });
         {% endif %}
-        {% if latestVersion == x.version and lock == 1 and role == "Contributor" %}
-          window.alert("Document is already being edited. Opening in ReadOnly Mode");
-        {% endif %}
-        console.log("elsebody")
-        console.log({{latestVersion}})
-        console.log({{x.version}})
-        quill = new Quill("#snow-container", {
-          readOnly:true,
-          placeholder: "Compose an epic...",
-          modules: {
-            toolbar: toolbarOptions
-          },
-          theme: "snow"
-        });
       {% endif %}
 
       {% if x %}

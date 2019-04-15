@@ -59,6 +59,7 @@ class User_Document(models.Model):
 class LatestVersion(models.Model):
 	docVersionID = models.ForeignKey(Documents, on_delete=models.CASCADE)
 	latestVersion = models.FloatField(default=1.0)
+	lockUser = models.ForeignKey(Users, on_delete=models.CASCADE, default = None, blank = True, null = True)
 
 class Comments(models.Model):
     userID = models.ForeignKey(Users, on_delete=models.CASCADE)

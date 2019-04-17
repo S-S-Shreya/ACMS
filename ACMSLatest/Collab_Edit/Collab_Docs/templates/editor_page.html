@@ -64,9 +64,12 @@
     {% for x in document %}
       //alert("{{lockedUser}}");
       //alert("{{LOGIN_ID}}");
+      var flag = 0,flag2 = 0;
       {% if latestVersion == x.version and role == "Contributor" %}
-        alert("here1")
+        //alert("here1")
+        flag = 1;
         {% if lock == 0 or lockedUser == LOGIN_ID %}
+          flag2 = 1;
           var apprBtn = document.getElementById("approveButton");
           apprBtn.style.display = "none";
           console.log("ifbody")
@@ -79,29 +82,31 @@
             },
             theme: "snow"
           });
-        {% else %} 
-          var saveBtn = document.getElementById("saveButton");
-          saveBtn.style.display = "none";
-          {% if role == "Contributor" %}
-            var apprBtn = document.getElementById("approveButton");
-            apprBtn.style.display = "none";
-          {% endif %}
-          {% if latestVersion == x.version and lock == 1 and role == "Contributor" %}
-            window.alert("Document is already being edited. Opening in ReadOnly Mode");
-          {% endif %}
-          console.log("elsebody")
-          console.log({{latestVersion}})
-          console.log({{x.version}})
-          quill = new Quill("#snow-container", {
-            readOnly:true,
-            placeholder: "Compose an epic...",
-            modules: {
-              toolbar: toolbarOptions
-            },
-            theme: "snow"
-          });
         {% endif %}
       {% endif %}
+      if(flag==0 || flag2==0)
+      {
+        var saveBtn = document.getElementById("saveButton");
+        saveBtn.style.display = "none";
+        {% if role == "Contributor" %}
+          var apprBtn = document.getElementById("approveButton");
+          apprBtn.style.display = "none";
+        {% endif %}
+        {% if latestVersion == x.version and lock == 1 and role == "Contributor" %}
+          window.alert("Document is already being edited. Opening in ReadOnly Mode");
+        {% endif %}
+        console.log("elsebody")
+        console.log({{latestVersion}})
+        console.log({{x.version}})
+        quill = new Quill("#snow-container", {
+          readOnly:true,
+          placeholder: "Compose an epic...",
+          modules: {
+            toolbar: toolbarOptions
+          },
+          theme: "snow"
+        });
+      }
 
       {% if x %}
         json={{x.content|safe}}
@@ -280,7 +285,7 @@
         {% if i.commentID == k.commentID.commentID %}
         <div class="w3-panel w3-border-left w3-pale-red w3-border-red">
             <div id="r" class = "w3-panel w3-border-left w3-pale-yellow w3-border-red">
-            username: {{i.userID}}
+            username: {{k.userID}}
             </div>
            {{k.reply }}
           
@@ -365,7 +370,7 @@
    <div id="ask1" class="w3-modal">
         <div class="w3-modal-content">
         <div class="w3-container">
-        <span onclick="document.getElementById('ask').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+        <span onclick="document.getElementById('ask1').style.display='none'" class="w3-button w3-display-topright">&times;</span>
       	<p> Enter here! </p>
       	<textarea id="newinp1" rows="6" cols="80" ></textarea><br>
       	<button onclick="trial()" class="w3-button w3-black">Submit</button>

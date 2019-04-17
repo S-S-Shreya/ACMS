@@ -161,12 +161,15 @@ def EditorView(request,LOGIN_ID,id,version,role):
 	latestVersion = LatestVersion.objects.filter(docVersionID__docID = i.docID)
 	for x in latestVersion:
 		pass
-	print(x.lockUser.LOGIN_ID)
+	#print(x.lockUser.LOGIN_ID)
+	lUsername = ""
+	if(x.lockUser):
+		lUsername = x.lockUser.LOGIN_ID
 	print(LOGIN_ID)
 	print("done")
 	context = { 'document':doc, 
 				'latestVersion' : x.latestVersion, 
-				'lockedUser' : x.lockUser.LOGIN_ID,
+				'lockedUser' : lUsername,
 				'lock':flag, 
 				'LOGIN_ID': LOGIN_ID, 
 				'comment': comment, 

@@ -31,7 +31,7 @@
 </nav>
 
 <div class="container">
-  <!-- The Modal for SIGN IN-->
+ <!-- The Modal for SIGN IN-->
   <div class="modal" id="signup">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -44,28 +44,39 @@
         
         <!-- Modal body -->
         	<div class="modal-body">
-            	<form method="post" action="{% url 'login' %}">
+            	<form method="post" action="{% url 'signUp' %}">
             		{% csrf_token %}
             		<div class="form-group">
             			<label for="nameofuser">Enter the User Name which acts as your login id</label>
-            			<input type="text" class="form-control" id="username" placeholder="User name ">
+            			<input type="text" class="form-control" id="username" name="LOGIN_ID" placeholder="User name ">
             		</div>
 
             		<div class="form-group">
               			<label for="password">Enter the Password</label>
-              			<input type="password" class="form-control" id="password" aria-describedby="help" placeholder="Password">
+              			<input type="password" class="form-control" id="password" name="PASSWORD" aria-describedby="help" placeholder="Password">
               			<small id="help" class="form-text text-muted">We'll never share your password with anyone else.</small>
-              		</div>
+              	</div>
+
+
+
+                <div class="form-group">
+                    <label for="Email">Email address</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
+                </div>
+
 
             		<div class="form-group">
                 		<label for="University">University/College Name</label>
-                		<input type="text" class="form-control" id="universityname" placeholder="College/University">
+                		<input type="text" class="form-control" id="universityname" name="institution" placeholder="College/University">
             		</div>
 
-            		<div class="form-group">
-                		<label for="Email">Email address</label>
-                		<input type="email" class="form-control" id="email" placeholder="Enter email">
-            		</div>
+
+                <div class="form-group">
+                    <label for="University">Profession</label>
+                    <input type="text" class="form-control" id="Professionname" name="Profession" placeholder="Enter profession">
+                </div>
+
+            		
               
             		<button class="btn btn-primary" type="submit">Sign Up</button>
 

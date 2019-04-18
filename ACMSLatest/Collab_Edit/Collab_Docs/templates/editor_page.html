@@ -88,10 +88,22 @@
       {
         var saveBtn = document.getElementById("saveButton");
         saveBtn.style.display = "none";
+        var apprBtn = document.getElementById("approveButton");
         {% if role == "Contributor" %}
-          var apprBtn = document.getElementById("approveButton");
           apprBtn.style.display = "none";
-        {% endif %}
+        {% else %}
+          {% if approved == True %} 
+            //alert("approved")
+            apprBtn.innerHTML = "Approved";
+            apprBtn.className = "w3-button w3-green";
+            //apprBtn.disabled = true;
+            apprBtn.type = "button";
+            apprBtn.onclick = function(){};
+          {% endif %}
+          {% if approvedDiffVersion %}
+            apprBtn.disabled = true;
+          {% endif %}
+      	{% endif %}
         {% if latestVersion == x.version and lock == 1 and role == "Contributor" %}
           window.alert("Document is already being edited. Opening in ReadOnly Mode");
         {% endif %}
@@ -226,10 +238,17 @@
     &nbsp;
     <button id="saveButton" class="w3-button w3-black" onclick="popup();" type="button">Save</button> 
     <button id="approveButton" class="w3-button w3-black" onclick="approveUpdate();" type="submit">Approve</button>
+    <button id="homeButton" class="w3-button w3-black" type="button" style="float: right; margin-right: 2%;">
+      <a href="{% url 'data' LOGIN_ID %}">Home</a>
+    </button>
+
     <input name="contents" type="hidden"> 
     <input name="approve" type="hidden">
     {% if ReviewerName %}
       <p>&nbsp; This document has been approved by {{ReviewerName}} </p>
+    {% endif %}
+    {% if approvedDiffVersion %}
+      <p>&nbsp;Version {{approvedDiffVersion}} has already been approved </p>
     {% endif %}
 
 

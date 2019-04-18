@@ -129,9 +129,18 @@ def EditorView(request,LOGIN_ID,id,version,role):
 	for x in doc:
 		pass
 	ReviewerName = None
+	approved = False
 	if(x.approve == True):
 		Reviewer = User_Document.objects.get(docID__docID =id,ROLE="REVIEWER")
 		ReviewerName = Reviewer.LOGIN_ID.name
+		approved = True
+	approvedDiffVersion = None
+	docObjs = Documents.objects.filter(docID=id)
+	for aDoc in docObjs:
+		if (aDoc.approve==True):
+			if(aDoc!=x):
+				approvedDiffVersion = aDoc.version
+				break
 	comment = Comments.objects.filter(docID=id).order_by('-commentID')
 	replies = []
 	votes = []
@@ -167,6 +176,7 @@ def EditorView(request,LOGIN_ID,id,version,role):
 		lUsername = x.lockUser.LOGIN_ID
 	print(LOGIN_ID)
 	print("done")
+	print(approvedDiffVersion)
 	context = { 'document':doc, 
 				'latestVersion' : x.latestVersion, 
 				'lockedUser' : lUsername,
@@ -179,7 +189,9 @@ def EditorView(request,LOGIN_ID,id,version,role):
 				'personal_v':p_voted,
 				'voted_comments':voted_comments,
 				'role':role,
-				'ReviewerName':ReviewerName }
+				'ReviewerName':ReviewerName,
+				'approved':approved,
+				'approvedDiffVersion':approvedDiffVersion }
 	return render(request,'editor_page.html', context=context )
 
 
@@ -244,6 +256,7 @@ def data(request, LOGIN_ID):
 	context = {'COLLABORATOR' : COLLABORATOR, 'REVIEWER':REVIEWER, 'LOGIN_ID':LOGIN_ID}
 	return render(request, 'landing.html', context)
 
+"""
 def createDoc(request, LOGIN_ID):
 	if request.method == 'POST':
 		# create a form instance and populate it with data from the request:
@@ -253,39 +266,43 @@ def createDoc(request, LOGIN_ID):
 		print("where are youuuuuu")
 		docname = request.POST.get('docname')
 		reviewer = request.POST.get('reviewer')
-		collaborator = request.POST.get('collaborator')
+		collaborator = []
+		for key,value in request.POST.items():
+			print(key,value)
+			collaborator.append(value)
+			print(value)
 		print(collaborator)
 		try:
 			rev = models.Users.objects.filter(pk=reviewer) 
 			if rev:
-				#for x in collaborator:
-				collab = []
-				#collab.append(LOGIN_ID)
-				i = models.Users.objects.filter(pk=collaborator)
-				if i:
-					collab.append(i)
+				for x in collaborator:
+					collab = []
+					#collab.append(LOGIN_ID)
+					i = models.Users.objects.filter(pk=x)
+					if i:
+						collab.append(i)
 							
-				else:
-					print('\nwrong credentials\n')
-					#break
+					else:
+						print('\nwrong credentials\n',x)
+						break
 				
-				#else:
-				doc=Documents(docname=docname,content={})
-				doc.save()
-				latestttt = LatestVersion(docVersionID=doc, latestVersion=1.0)
-				latestttt.save()
-				for i in rev:
-					print("1")
-					addRev = User_Document(LOGIN_ID=i, docID=doc, ROLE = 'REVIEWER' )
-					print("2")
-					addRev.save()
-				for i in collab:
-					for j in i:
-						print("3")
-						addCollab = User_Document(LOGIN_ID=j, docID=doc, ROLE = 'COLLABORATOR' )
+				else:
+					doc=Documents(docname=docname,content={})
+					doc.save()
+					latestttt = LatestVersion(docVersionID=doc, latestVersion=1.0)
+					latestttt.save()
+					for i in rev:
+						print("1")
+						addRev = User_Document(LOGIN_ID=i, docID=doc, ROLE = 'REVIEWER' )
+						print("2")
+						addRev.save()
+					for i in collab:
+						for j in i:
+							print("3")
+							addCollab = User_Document(LOGIN_ID=j, docID=doc, ROLE = 'COLLABORATOR' )
 
-						print("4")
-						addCollab.save()
+							print("4")
+							addCollab.save()
 					
 			else:
 				print('\nwrong credentials\n')
@@ -294,6 +311,95 @@ def createDoc(request, LOGIN_ID):
 		except Exception as e:
 			print('\n', e, '\nwrong credentials\n')
 	
+	#GET request
 	return render(request, 'createnew.html')
-		
-		
+"""
+
+def createDoc(request, LOGIN_ID):
+	if request.method == 'POST':
+		print("where are youuuuuu")
+		docname = request.POST.get('docname')   #getdocname
+		reviewer = request.POST.get('reviewer')  #getreviewer
+		choice = request.POST.get('opt')         #ask if user wants to be reviewer or collaborator
+		items=[]
+		for key,value in request.POST.items():   #loop through the entire post fields 
+				items.append(value)
+		collaborator=list(set(items[4:])) #skip first 4 fields and select only unique collaborators fields
+		if reviewer in collaborator:   #if reviewer and collaborator are same 
+			return render(request, 'createnew.html', {"error":"Same reviewer and collaborator"})
+		#print(items)
+		#print(collaborator)
+		try:
+			rev = models.Users.objects.filter(pk=reviewer)
+			if rev:   #if revewier exists
+				reviewerlist=[]
+				reviewerlist.append(rev)
+			else:
+				return render(request, 'createnew.html', {"error":"Wrong reviewer User ID"})
+
+			collablist = [] 
+			if(choice=='collaborator'):
+				collablist.append(models.Users.objects.filter(pk=LOGIN_ID))
+			else:
+				reviewerlist.append(models.Users.objects.filter(pk=LOGIN_ID))
+
+			for x in collaborator:  
+				i = models.Users.objects.filter(pk=x)
+				if i:    #if collaborator exists
+					collablist.append(i)		
+				else:
+					print('\nwrong credentials\n')
+					return render(request, 'createnew.html', {"error":"Wrong collaborator User ID"})
+				
+				#else:
+			doc=Documents(docname=docname,content={})
+			doc.save()
+			latestttt = LatestVersion(docVersionID=doc, latestVersion=1.0)
+			latestttt.save()
+			
+			for i in reviewerlist:
+				addRev = User_Document(LOGIN_ID=i.first(), docID=doc, ROLE = 'REVIEWER' )
+				addRev.save()
+
+			for i in collablist:
+					print("3")
+					addCollab = User_Document(LOGIN_ID=i.first(), docID=doc, ROLE = 'COLLABORATOR')
+					print("4")
+					addCollab.save()
+					
+			return redirect(reverse('data', kwargs={'LOGIN_ID':LOGIN_ID}))
+				
+		except Exception as e:
+			return render(request, 'createnew.html', {"error":e})
+	return render(request, 'createnew.html',{'LOGIN_ID':LOGIN_ID})
+
+
+def signUp(request):
+	if request.method == 'POST':
+		# create a form instance and populate it with data from the request:
+		form = signUpForm(request.POST)
+		if form.is_valid():
+			LOGIN_ID = request.POST.get('LOGIN_ID')
+			PASSWORD = request.POST.get('PASSWORD')
+			email=request.POST.get('email')
+			name =request.POST.get('name')
+			institution = request.POST.get('institution')
+			profession = request.POST.get('profession')
+			try:
+				if models.Users.objects.get(pk=LOGIN_ID):  #if username already exists
+					print("user already exists\n")
+					form =signUpForm()
+				else:
+					newUser = Users(LOGIN_ID=LOGIN_ID,PASSWORD=PASSWORD,email=email,name=name,institution=institution,profession=profession); 
+					newUser.save()
+					#return redirect(reverse('data', kwargs={'LOGIN_ID':LOGIN_ID}))
+					return render(request, 'mainpage.html')
+					
+			except Exception as e:
+				print('\n', e, '\nwrong credentials\n')
+				form = signUpForm()
+
+	else:
+		form =signUpForm()
+
+	return render(request, 'mainpage.html')

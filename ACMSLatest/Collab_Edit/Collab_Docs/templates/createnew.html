@@ -17,34 +17,49 @@
     
 </head>
 <body>
+{%if error%}
+       <h4 style="color:red;text-align:center;">{{error}}</h2>
+{%endif%}
+
 <div class="container shift">
 	<h2 id="heading" class="text-center">New Document Form</h2>
 	<form method="post" action="">
-		{% csrf_token %}
-	  <div class="form-group">
+	{% csrf_token %}
+	<div class="form-group">
 	    <label for="nameofdocument">Enter the name of the Document</label>
 	    <input type="text" class="form-control" id="documentname" name="docname" placeholder="Document name ">
-	  </div>
-	
+	</div>
+		
+	<div class="form-group">
+		<label for="choose">Do you want to be the reviewer or collaborator</label>
+		<br/>
+    		<label class="radio-inline">
+      			<input type="radio" name="opt" value="collaborator" checked>Collaborator
+    		</label>
+    		<label class="radio-inline">
+      			<input type="radio" name="opt" value="reviewer">Reviewer
+   		 </label>
+	</div>
 
 	<div class="form-group">
 	    <label for="nameofreviewer">Add the Reviewer</label>
 	    <input type="text" class="form-control" id="reviewername" name="reviewer" placeholder="Reviewer name ">
 	 </div>
-
+		
 	<div class="form-group" id="multiplecollab">
-	    	<label for="nameofcollaborator">Add the collaborators</label>
+	    	<label for="nameofcollaborator">Add the Contributors</label>
 	    	<div class="input-group">
-	    	<input type="text" class="form-control" id="collaboratorsname" name="collaborator" placeholder="collaborators name ">   
-			<div class="input-group-btn">
-				<button class="btn btn-success" type="button" onclick="collaborator_field()"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
-			</div>
+	    		<input type="text" class="form-control" id="collaboratorsname" name="collaborator1" placeholder="collaborators name ">   
+				<div class="input-group-btn">
+					<button class="btn btn-success" type="button" onclick="collaborator_field()"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+				</div>
 
 		</div>
 		<br/>
-	</div>     
-    <div>
-	<button class="btn btn-primary" onclick="jug()" type="submit">Create</button>
+	</div>   
+		
+    	<div>
+		<button class="btn btn-primary" type="submit">Create</button>
 	</div>
 	</form>
 	
@@ -52,21 +67,18 @@
 </body>
 </html>
 <script>
-	function jug()
-	{
-		alert(x);
-	}
 	var room = 1;
-function collaborator_field() {
-    room++;
-    var objTo = document.getElementById('multiplecollab')
-    var divtest = document.createElement("div");
-	divtest.setAttribute("class", "form-group removeclass"+room);
-	var rdiv = 'removeclass'+room;
-    divtest.innerHTML = '<div class="input-group"><input type="text" class="form-control" id="collaboratorsname" name="collaborator[]" placeholder="collaborators name "><div class="input-group-btn"><button class="btn btn-danger" type="button" onclick="remove_collaborator_field('+ room +');"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></div></div>';
-    objTo.appendChild(divtest)
-}
-   function remove_collaborator_field(rid) {
-	   $('.removeclass'+rid).remove();
-   }
+	function collaborator_field() {
+	    room++;
+	    var objTo = document.getElementById('multiplecollab')
+	    var divtest = document.createElement("div");
+		divtest.setAttribute("class", "form-group removeclass"+room);
+		var rdiv = 'removeclass'+room;
+		var cnt='collaborator'+room;
+	    divtest.innerHTML = '<div class="input-group"><input type="text" class="form-control" id="collaboratorsname" name="collaborator'+(room)+'" placeholder="collaborators name "><div class="input-group-btn"><button class="btn btn-danger" type="button" onclick="remove_collaborator_field('+ room +');"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></div></div>';
+	    objTo.appendChild(divtest)
+	}
+	function remove_collaborator_field(rid) {
+		   $('.removeclass'+rid).remove();
+	   }
 </script>

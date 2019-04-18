@@ -10,7 +10,9 @@ urlpatterns = [
     path('documents/<LOGIN_ID>/<id>/<version>/r', views.ReadonlyView, name='readonly'),
     path('<LOGIN_ID>',data, name='data'),
     path('createDoc/<LOGIN_ID>',createDoc, name='new'),
-	path('',login, name='login')   
+	path('',login, name='login') ,
+	path('signup/',signUp, name='signUp') 
+
 ]
 """
 

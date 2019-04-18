@@ -47,7 +47,7 @@
             	<form method="post" action="{% url 'signUp' %}">
             		{% csrf_token %}
             		<div class="form-group">
-            			<label for="nameofuser">Enter the User Name which acts as your login id</label>
+            			<label for="nameofuser">Enter login id</label>
             			<input type="text" class="form-control" id="username" name="LOGIN_ID" placeholder="User name ">
             		</div>
 
@@ -55,8 +55,9 @@
               			<label for="password">Enter the Password</label>
               			<input type="password" class="form-control" id="password" name="PASSWORD" aria-describedby="help" placeholder="Password">
               			<small id="help" class="form-text text-muted">We'll never share your password with anyone else.</small>
-              	</div>
-
+              		</div>
+			
+			
 
 
                 <div class="form-group">
@@ -64,6 +65,10 @@
                     <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
                 </div>
 
+			<div class="form-group">
+            			<label for="nameofuser">Enter name</label>
+            			<input type="text" class="form-control" id="name" name="name" placeholder="User name ">
+            		</div>
 
             		<div class="form-group">
                 		<label for="University">University/College Name</label>

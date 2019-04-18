@@ -12,3 +12,13 @@ class ReplyForm(forms.Form):
 
 class AcceptForm(forms.Form):
 	accept = forms.IntegerField()
+	
+	
+class signUpForm(forms.Form):
+   LOGIN_ID = forms.CharField(max_length = 100)
+   PASSWORD = forms.CharField(widget = forms.PasswordInput())
+   email = forms.EmailField()
+   name = forms.CharField(max_length=30)
+   institution = forms.CharField(max_length=50)
+   profession = forms.CharField(max_length=30)
+	

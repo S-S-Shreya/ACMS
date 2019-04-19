@@ -313,7 +313,7 @@ def createDoc(request, LOGIN_ID):
 	
 	#GET request
 	return render(request, 'createnew.html')
-"""
+
 
 def createDoc(request, LOGIN_ID):
 	if request.method == 'POST':
@@ -372,7 +372,66 @@ def createDoc(request, LOGIN_ID):
 		except Exception as e:
 			return render(request, 'createnew.html', {"error":e})
 	return render(request, 'createnew.html',{'LOGIN_ID':LOGIN_ID})
+"""
+def createDoc(request, LOGIN_ID):
+	if request.method == 'POST':
+		#print("where are youuuuuu")
+		docname = request.POST.get('docname')   #getdocname
+		choice = request.POST.get('opt')         #ask if user wants to be reviewer or collaborator
+		index=0
+		collablist = [] 
+		if choice == "collaborator" :
+			reviewer = request.POST.get('reviewer')  #getreviewer
+			try:
+				rev = models.Users.objects.get(pk=reviewer)   #extract reviewer detail
+				collablist.append(models.Users.objects.get(pk=LOGIN_ID))
+				index=4
+			except:
+				return render(request, 'createnew.html', {"error":"Wrong reviwer User ID"})
+		else:
+			index=3
+			rev=models.Users.objects.get(pk=LOGIN_ID)
+		
+		items=[]
+		for key,value in request.POST.items():   #loop through the entire post fields 
+				items.append(value)
+		collaborator=list(set(items[index:])) #skip first 'index' fields and select only unique collaborators fields
 
+		if reviewer in collaborator:   #if reviewer and collaborator are same 
+			return render(request, 'createnew.html', {"error":"same reviewer and collaborator"})
+		#print(items)
+		#print(collaborator)
+		try:
+			for x in collaborator:  
+				try:
+					i = models.Users.objects.get(pk=x) #if collaborator exists
+					collablist.append(i)		
+				except:  #throws exception when user doesnt exist
+					print('\nwrong credentials\n')
+					return render(request, 'createnew.html', {"error":"Wrong collaborator User ID"})
+				
+				#else:
+			doc=Documents(docname=docname,content={})
+			doc.save()
+			latestttt = LatestVersion(docVersionID=doc, latestVersion=1.0)
+			latestttt.save()
+			
+			
+			addRev = User_Document(LOGIN_ID=rev, docID=doc, ROLE = 'REVIEWER' )
+			addRev.save()
+
+			for i in collablist:
+					print("3")
+					addCollab = User_Document(LOGIN_ID=i, docID=doc, ROLE = 'COLLABORATOR')
+					print("4")
+					addCollab.save()
+					
+			return redirect(reverse('data', kwargs={'LOGIN_ID':LOGIN_ID}))
+				
+		except Exception as e:
+			return render(request, 'createnew.html', {"error":e})
+
+	return render(request, 'createnew.html',{'LOGIN_ID':LOGIN_ID})
 
 def signUp(request):
 	if request.method == 'POST':

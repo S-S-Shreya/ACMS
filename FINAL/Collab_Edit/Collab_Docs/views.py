@@ -231,12 +231,15 @@ def login(request):
 					print(LOGIN_ID+'/data')
 					return redirect(reverse('data', kwargs={'LOGIN_ID':LOGIN_ID}))
 				else:
+					return render(request, 'mainpage.html', {"error":"Wrong Credentials. Login again"})
 					print('\nwrong credentials\n')
 					form = LoginForm()
+					
 			except Exception as e:
-				raise forms.ValidationError('Looks like a username with that email or password already exists')
-				#print('\n', e, '\nwrong credentials\n')
-				#form = LoginForm()
+				#raise forms.ValidationError('Looks like a username with that email or password already exists')
+				print('\n', e, '\nwrong credentials\n')
+				form = LoginForm()
+				return render(request, 'mainpage.html', {"error":"Something went wrong. Login again"})
 	"""
 	else:
 		form = LoginForm()
@@ -345,6 +348,7 @@ def signUp(request):
 				if models.Users.objects.get(pk=LOGIN_ID):  #if username already exists
 					print("user already exists\n")
 					form =signUpForm()
+					return render(request, 'mainpage.html', {"error":"User already exists.Sign in again."})
 					
 			except Exception as e:
 				print(1)
@@ -356,5 +360,7 @@ def signUp(request):
 	else:
 		print(3)
 		form =signUpForm()
+		return render(request, 'mainpage.html', {"error":"Wrong credentials. Please sign in again."})
+		
 
-	return render(request, 'mainpage.html')
+	#return render(request, 'mainpage.html')

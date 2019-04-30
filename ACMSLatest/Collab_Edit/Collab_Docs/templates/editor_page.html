@@ -345,7 +345,7 @@
         <div class="w3-container">
         <span onclick="document.getElementById('{{i.commentID}}+id01').style.display='none'" class="w3-button w3-display-topright">&times;</span>
       {% if i.commentID not in voted_comments %}
-      		<p> No reactions yet! </p>
+      		<h3> No reactions yet! </h3>
       {% else %}
       {% for v in votes %} 
       	{% for l in v %}
@@ -353,8 +353,8 @@
       		{% if l.commentID.commentID == i.commentID %}
       			
       			{% if l.accept == 1 %} 
-      				<p>{{l.userID}} accepted </p>  {% endif %}
-      			{% if l.accept == 0 %} <p>{{l.userID}} rejected </p> {% endif %}
+      				<h3>{{l.userID}} accepted </h3>  {% endif %}
+      			{% if l.accept == 0 %} <h3>{{l.userID}} rejected </h3> {% endif %}
       			
       		{% endif %}	
       			
